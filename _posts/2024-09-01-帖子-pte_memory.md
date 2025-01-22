@@ -28,3 +28,9 @@ segment内存包括：
                 |vm node : vidmm_vm_alloc_pd(分三级页表)|
 
 local作为一个分配heap，具体到alloc回调的时候根据range区分cpu visiable和unvisiable，无非是高和低的地址不同，属性没有不同。低一半的visiable可以在bar上看到。
+
+? 最大的ttbr是32个 根table按照8k对齐
+
+
+
+zx_create_range_allocator 这是一个分配器 不仅分va也分pa

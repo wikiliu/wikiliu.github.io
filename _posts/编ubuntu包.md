@@ -1,0 +1,33 @@
+# amd64
+
+apt source
+
+apt build-dep 
+
+dpkg-buildpackage -b -nc
+
+dpkg-buildflags - change CFLAGS
+
+# i386
+
+apt --add-architectures i386
+
+apt update
+
+apt install devscripts
+
+mk-build-deps --host-arch i386
+
+apt install ./mesa-cross-build-deps_24.0.5-1ubuntu1_i386.deb
+aptitude install ./mesa-cross-build-deps_24...
+
+tips: llvm have to i386，python manual add package（use the venv in high version system:python3 -m venv ~/myenv export PATH=~/myenv/bin:$PATH）
+
+
+# 编mesa包
+大坑 没有python-mako
+python3 -m venv ~/mypython
+cd ~/mypython/
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+./python get-pip.py
+ export VIRTUAL_ENV="/root/mypython/bin"
