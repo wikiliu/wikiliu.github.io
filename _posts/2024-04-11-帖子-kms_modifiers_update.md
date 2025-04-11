@@ -1,4 +1,13 @@
-
+---
+title: "gem modifiers 更新"
+date: 2025-04-11T15:47:30-04:00
+classes: wide
+categories:
+  - 帖子
+tags:
+  - Drm
+  - Gem
+---
 modifers 的更新 
 drm_universal_plane_init 对应init_kms_caps config->allow_fb_modifiers = true
 ->drm_object_attach_property ->create_in_format_blob 
