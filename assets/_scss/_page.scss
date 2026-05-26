@@ -1,27 +1,21 @@
-// .sidebar {
-//   @include span(0.5 of 12);
-// }
-// .page {
-//   @include breakpoint($large) {
-//     @include span(11 of 12 last);
-//     @include prefix(0.5 of 12);
-//     @include suffix(0.5 of 12);
-//   }
-//
-//   .page__inner-wrap {
-//     @include full();
-//
-//     .page__content,
-//     .page__meta,
-//     .page__share {
-//       @include full();
-//     }
-//   }
-// }
 .sidebar {
-  @include span(1 of 12);
+  @include breakpoint($large) {
+    @include span(2 of 12);
+  }
 }
 
 .page {
-  @include span(11 of 12 last);
+  @include breakpoint($large) {
+    @include span(10 of 12 last);
+  }
+
+  .page__inner-wrap {
+    @include full();
+
+    .page__content,
+    .page__meta,
+    .page__share {
+      @include full();
+    }
+  }
 }
