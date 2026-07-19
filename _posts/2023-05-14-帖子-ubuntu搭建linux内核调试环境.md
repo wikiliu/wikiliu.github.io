@@ -10,13 +10,14 @@ tags:
     - LINUX
 toc: true
 toc_sticky: true
----    
+---
 
 
 最近在读《深入Linux内核架构》，搭建了一下Linux 2.6.24的内核调试环境。由于该内核较老，目前找不到任何还在维护的发行版，所以采用qemu运行32位的内核。
 
 
 ## 基础环境
+
 >*虚拟机镜像：ubuntu-14.04.6-desktop-amd64.iso
 
 >*gcc版本：4.4 “sudo apt install gcc-4.4”
@@ -24,6 +25,7 @@ toc_sticky: true
 >*都在root环境下执行，能省去不少麻烦 “su”
 
 ## 安装插件
+
 ```
 apt-get install -y libncurses5-dev build-essential
 apt-get install -y lib32readline-gplv2-dev # 编译32位系统
@@ -32,6 +34,7 @@ apt-get install -y qemu-system
 ```
 
 ## 编译内核`（gcc4.4环境下非常简单，不需要更改源文件）`
+
 ```
 wget --no-check-certificate https://mirror.bjtu.edu.cn/kernel/linux/kernel/v2.6/linux-2.6.24.tar.xz
 tar xvJf linux-2.6.24.tar.xz
@@ -46,7 +49,9 @@ make ARCH=i386 -j4
 #可能会出现寄存器错误 用vim打开报错文件在命令模式下输入
 <span class="has-inline-color has-pale-cyan-blue-color">%s/"=r"/"=q"g</span>
 ```
+
 ## 制作文件系统`（使用busybox制作32位根文件系统）`
+
 ```
 # 1. <strong>就在linux-2.6.24目录下下载busybox</strong>
 wget --no-check-certificate https://busybox.net/downloads/busybox-1.21.1.tar.bz2
@@ -119,8 +124,9 @@ umount ./rootfs
 ```
 
 ## 启动内核
+
 ```
-qemu-system-x86_64 -kernel ./arch/x86/boot/bzImage -initrd ./initrd.img -append "root=/dev/ram" 
+qemu-system-x86_64 -kernel ./arch/x86/boot/bzImage -initrd ./initrd.img -append "root=/dev/ram"
 当然，也可以使用
 <kbd>-nographi</kbd>c参数，在tty0启动内核
 qemu-system-x86_64 -kernel ./arch/x86/boot/bzImage -initrd ./initrd.img -append "root=/dev/ram console=ttyS0" -nographic
