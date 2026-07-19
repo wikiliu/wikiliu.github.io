@@ -37,7 +37,7 @@ output file tree：
 1. build 拷贝的解码的源码文件目录
 2. host 当前主机需要的tool和交叉编译的依赖（头文件 包）
 3. target 要打在生成精简操作系统的文件系统
-4. image 最终生成 包括.dtb--boot zImage--kernel rootfs.tar rootfs.ubi (格式不一样而已) 
+4. image 最终生成 包括.dtb--boot zImage--kernel rootfs.tar rootfs.ubi (格式不一样而已)
 
 
 ## 库的功能
