@@ -10,7 +10,7 @@ tags:
     - PACMAN
 toc: true
 toc_sticky: true
----    
+---
 
 
 **清理pacman孤包执行`sudo pacman -Rns $(pacman -Qtdq)` 后进不了桌面**
