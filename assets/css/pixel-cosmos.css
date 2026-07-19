@@ -814,3 +814,128 @@ figure.highlight::before {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Full-height player panel, full-width pagination and interactive layer. */
+#pixel-starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  opacity: 0.92;
+}
+
+.initial-content,
+.masthead,
+.page__footer {
+  position: relative;
+  z-index: 1;
+}
+
+#pixel-ranger {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 5px rgba(85, 244, 255, 0.8));
+  will-change: transform;
+}
+
+html.pixel-cursor-enabled,
+html.pixel-cursor-enabled * {
+  cursor: none !important;
+}
+
+@media (min-width: 1024px) {
+  #main {
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: clamp(2rem, 3.4vw, 4rem);
+  }
+
+  .sidebar {
+    display: flex !important;
+    min-height: min(720px, calc(100vh - 9rem));
+    flex-direction: column;
+    padding: 1.25rem !important;
+    background:
+      radial-gradient(circle at 76% 18%, rgba(255, 227, 110, 0.12), transparent 5rem),
+      radial-gradient(circle at 22% 76%, rgba(85, 244, 255, 0.1), transparent 7rem),
+      linear-gradient(145deg, rgba(255, 117, 216, 0.08), transparent 38%),
+      linear-gradient(180deg, rgba(23, 32, 62, 0.96), rgba(10, 15, 34, 0.97));
+  }
+
+  .sidebar .author__urls-wrapper {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .sidebar .author__urls {
+    align-content: start;
+  }
+
+  .sidebar::after {
+    margin-top: auto;
+  }
+}
+
+.archive .pagination {
+  width: 100% !important;
+  max-width: none !important;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+
+.archive .pagination ul {
+  display: flex;
+  width: 100%;
+  gap: 0.55rem;
+  padding: 0;
+}
+
+.archive .pagination li {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.archive .pagination li a,
+.archive .pagination li a.current,
+.archive .pagination li a.disabled {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 0.4rem;
+  font-family: var(--code-font);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.archive .pagination li:first-child,
+.archive .pagination li:last-child {
+  flex-grow: 1.35;
+}
+
+@media (max-width: 680px) {
+  .archive .pagination ul {
+    gap: 0.3rem;
+  }
+
+  .archive .pagination li a,
+  .archive .pagination li a.current,
+  .archive .pagination li a.disabled {
+    min-height: 42px;
+    padding: 0.5rem 0.2rem;
+    font-size: 0.78rem;
+  }
+
+  #pixel-ranger {
+    display: none;
+  }
+}
