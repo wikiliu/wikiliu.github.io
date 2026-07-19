@@ -116,7 +116,7 @@
     pointer.previousY = event.clientY;
     pointer.x = event.clientX;
     pointer.y = event.clientY;
-    pointer.active = true;
+    pointer.active = !event.target.closest(".archive__item, .page__inner-wrap, .sidebar, .masthead, .page__footer, .page__related, .pagination");
   }
 
   function drawPixelStar(star, time) {
