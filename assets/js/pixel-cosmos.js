@@ -41,10 +41,15 @@
       homeY: y,
       vx: (Math.random() - 0.5) * 0.05,
       vy: (Math.random() - 0.5) * 0.05,
-      size: index % 13 === 0 ? 2 : 1,
+      size: index % 11 === 0 ? 2 : 1,
       phase: Math.random() * Math.PI * 2,
-      color: palette[index % palette.length]
+      color: palette[index % palette.length],
+      alive: true
     };
+  }
+
+  function updateStarCount() {
+    starCanvas.dataset.starCount = String(stars.filter((star) => star.alive).length);
   }
 
   function resize() {
@@ -57,23 +62,34 @@
     starCanvas.style.height = height + "px";
     starCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const desired = Math.max(55, Math.min(130, Math.round((width * height) / 14500)));
+    const desired = Math.max(110, Math.min(240, Math.round((width * height) / 7800)));
     stars = Array.from({ length: desired }, (_, index) => makeStar(index));
+    updateStarCount();
   }
 
-  function addPulse(x, y, strong) {
-    pulses.push({ x, y, radius: 4, alpha: strong ? 0.9 : 0.5, speed: strong ? 5.5 : 3.2 });
+  function addPulse(x, y, strong, color = "85, 244, 255") {
+    pulses.push({
+      x,
+      y,
+      radius: 4,
+      alpha: strong ? 0.95 : 0.5,
+      speed: strong ? 5.5 : 3.2,
+      color
+    });
   }
 
-  function addSparks(x, y, angle) {
-    for (let index = 0; index < 22; index += 1) {
-      const spread = (Math.random() - 0.5) * 1.4;
-      const speed = 1.5 + Math.random() * 4.5;
+  function addSparks(x, y, angle, impact = false) {
+    const amount = impact ? 34 : 15;
+    for (let index = 0; index < amount; index += 1) {
+      const direction = impact
+        ? Math.random() * Math.PI * 2
+        : angle + (Math.random() - 0.5) * 1.25;
+      const speed = (impact ? 1.2 : 1.5) + Math.random() * (impact ? 5.8 : 3.8);
       sparks.push({
         x,
         y,
-        vx: Math.cos(angle + spread) * speed,
-        vy: Math.sin(angle + spread) * speed,
+        vx: Math.cos(direction) * speed,
+        vy: Math.sin(direction) * speed,
         life: 1,
         color: palette[index % palette.length],
         size: index % 4 === 0 ? 3 : 2
@@ -81,37 +97,46 @@
     }
   }
 
+  function nearestStar() {
+    let nearest = null;
+    let nearestDistance = Infinity;
+
+    stars.forEach((star) => {
+      if (!star.alive) return;
+      const distance = Math.hypot(star.x - pointer.x, star.y - pointer.y);
+      if (distance < nearestDistance) {
+        nearest = star;
+        nearestDistance = distance;
+      }
+    });
+
+    return nearest;
+  }
+
   function shoot() {
     if (!finePointer) return;
 
-    let aimX = pointer.aimX;
-    let aimY = pointer.aimY;
-    const length = Math.hypot(aimX, aimY) || 1;
-    aimX /= length;
-    aimY /= length;
-    pointer.aimX = aimX;
-    pointer.aimY = aimY;
+    const target = nearestStar();
+    if (!target) return;
 
-    const angle = Math.atan2(aimY, aimX);
+    const aimX = target.x - pointer.x;
+    const aimY = target.y - pointer.y;
+    const length = Math.hypot(aimX, aimY) || 1;
+    pointer.aimX = aimX / length;
+    pointer.aimY = aimY / length;
+
     shots.push({
       x: pointer.x,
       y: pointer.y,
-      aimX,
-      aimY,
-      life: 1
+      target,
+      progress: 0
     });
     addPulse(pointer.x, pointer.y, true);
-    addSparks(pointer.x, pointer.y, angle);
+    addSparks(pointer.x, pointer.y, Math.atan2(aimY, aimX));
     window.dispatchEvent(new CustomEvent("pixel-ranger-shoot"));
   }
 
   function updatePointer(event) {
-    const dx = event.clientX - pointer.previousX;
-    const dy = event.clientY - pointer.previousY;
-    if (Math.hypot(dx, dy) > 1.5) {
-      pointer.aimX = dx;
-      pointer.aimY = dy;
-    }
     pointer.previousX = event.clientX;
     pointer.previousY = event.clientY;
     pointer.x = event.clientX;
@@ -120,7 +145,7 @@
   }
 
   function drawPixelStar(star, time) {
-    const twinkle = 0.55 + Math.sin(time * 0.002 + star.phase) * 0.32;
+    const twinkle = 0.58 + Math.sin(time * 0.002 + star.phase) * 0.34;
     starCtx.globalAlpha = twinkle;
     starCtx.fillStyle = star.color;
     const size = star.size;
@@ -130,12 +155,22 @@
     starCtx.fillRect(x, y - size, 1, size * 2 + 1);
   }
 
+  function destroyStar(star) {
+    if (!star.alive) return;
+    star.alive = false;
+    addPulse(star.x, star.y, true, "255, 117, 216");
+    addSparks(star.x, star.y, 0, true);
+    updateStarCount();
+  }
+
   function animateStars(time) {
     const delta = Math.min(2, (time - lastTime) / 16.67);
     lastTime = time;
     starCtx.clearRect(0, 0, width, height);
 
     stars.forEach((star) => {
+      if (!star.alive) return;
+
       star.vx += (star.homeX - star.x) * 0.00045 * delta;
       star.vy += (star.homeY - star.y) * 0.00045 * delta;
 
@@ -143,18 +178,18 @@
         const dx = pointer.x - star.x;
         const dy = pointer.y - star.y;
         const distance = Math.hypot(dx, dy);
-        const radius = 270;
+        const radius = 320;
 
         if (distance > 1 && distance < radius) {
-          const force = Math.pow(1 - distance / radius, 2) * 0.042 * delta;
+          const force = Math.pow(1 - distance / radius, 2) * 0.046 * delta;
           star.vx += (dx / distance) * force;
           star.vy += (dy / distance) * force;
 
-          if (distance < 125) {
+          if (distance < 145) {
             starCtx.beginPath();
             starCtx.moveTo(star.x, star.y);
             starCtx.lineTo(pointer.x, pointer.y);
-            starCtx.strokeStyle = "rgba(85, 244, 255, " + ((1 - distance / 125) * 0.18) + ")";
+            starCtx.strokeStyle = "rgba(85, 244, 255, " + ((1 - distance / 145) * 0.2) + ")";
             starCtx.lineWidth = 1;
             starCtx.stroke();
           }
@@ -173,27 +208,38 @@
       pulse.alpha *= 0.92;
       starCtx.beginPath();
       starCtx.arc(pulse.x, pulse.y, pulse.radius, 0, Math.PI * 2);
-      starCtx.strokeStyle = "rgba(85, 244, 255, " + pulse.alpha + ")";
+      starCtx.strokeStyle = "rgba(" + pulse.color + ", " + pulse.alpha + ")";
       starCtx.lineWidth = pulse.radius < 22 ? 2 : 1;
       starCtx.stroke();
       return pulse.alpha > 0.03;
     });
 
     shots = shots.filter((shot) => {
-      const beamLength = 55 + (1 - shot.life) * 110;
-      const endX = shot.x + shot.aimX * beamLength;
-      const endY = shot.y + shot.aimY * beamLength;
+      if (!shot.target.alive) return false;
+
+      shot.progress = Math.min(1, shot.progress + 0.075 * delta);
+      const eased = 1 - Math.pow(1 - shot.progress, 3);
+      const endX = shot.x + (shot.target.x - shot.x) * eased;
+      const endY = shot.y + (shot.target.y - shot.y) * eased;
+      const trailStart = Math.max(0, eased - 0.18);
+      const trailX = shot.x + (shot.target.x - shot.x) * trailStart;
+      const trailY = shot.y + (shot.target.y - shot.y) * trailStart;
+
       starCtx.beginPath();
-      starCtx.moveTo(shot.x, shot.y);
+      starCtx.moveTo(trailX, trailY);
       starCtx.lineTo(endX, endY);
-      starCtx.strokeStyle = "rgba(255, 227, 110, " + shot.life + ")";
+      starCtx.strokeStyle = "rgba(255, 227, 110, " + (1 - shot.progress * 0.35) + ")";
       starCtx.lineWidth = 3;
       starCtx.stroke();
+      starCtx.globalAlpha = 1;
       starCtx.fillStyle = "#fff";
-      starCtx.globalAlpha = shot.life;
       starCtx.fillRect(Math.round(endX) - 2, Math.round(endY) - 2, 5, 5);
-      shot.life -= 0.085 * delta;
-      return shot.life > 0;
+
+      if (shot.progress >= 1) {
+        destroyStar(shot.target);
+        return false;
+      }
+      return true;
     });
 
     sparks = sparks.filter((spark) => {
@@ -217,10 +263,10 @@
 
     const ranger = document.createElement("canvas");
     ranger.id = "pixel-ranger";
-    ranger.width = 132;
-    ranger.height = 88;
-    ranger.style.width = "66px";
-    ranger.style.height = "44px";
+    ranger.width = 96;
+    ranger.height = 64;
+    ranger.style.width = "48px";
+    ranger.style.height = "32px";
     ranger.setAttribute("aria-hidden", "true");
     document.body.append(ranger);
     root.classList.add("pixel-cursor-enabled");
@@ -238,49 +284,49 @@
     };
 
     function drawRanger(time) {
-      rangerX += (pointer.x - rangerX) * 0.34;
-      rangerY += (pointer.y - rangerY) * 0.34;
-      ranger.style.transform = "translate3d(" + (rangerX - 50) + "px," + (rangerY - 22) + "px,0)";
-      ctx.clearRect(0, 0, 66, 44);
+      rangerX += (pointer.x - rangerX) * 0.38;
+      rangerY += (pointer.y - rangerY) * 0.38;
+      ranger.style.transform = "translate3d(" + (rangerX - 35) + "px," + (rangerY - 16) + "px,0)";
+      ctx.clearRect(0, 0, 48, 32);
 
       const bob = Math.sin(time * 0.012) > 0 ? 0 : 1;
 
-      // Original pixel ranger: coral helmet, cyan visor, tiny backpack and ray blaster.
-      block("#ff75d8", 8, 7 + bob, 17, 4);
-      block("#ff75d8", 6, 11 + bob, 22, 5);
-      block("#ffd0b8", 10, 16 + bob, 16, 8);
-      block("#55f4ff", 16, 16 + bob, 11, 4);
-      block("#070914", 20, 17 + bob, 5, 2);
-      block("#9a87ff", 8, 24 + bob, 18, 9);
-      block("#7dffc5", 11, 26 + bob, 5, 5);
-      block("#182143", 4, 23 + bob, 5, 10);
-      block("#ffe36e", 6, 25 + bob, 3, 3);
-      block("#9a87ff", 10, 33 + bob, 6, 5);
-      block("#9a87ff", 20, 33 + bob, 6, 5);
-      block("#55f4ff", 8, 38 + bob, 9, 3);
-      block("#55f4ff", 20, 38 + bob, 9, 3);
+      // Red-cap pixel plumber with blue overalls and a tiny sci-fi blaster.
+      block("#e53935", 5, 3 + bob, 14, 3);
+      block("#e53935", 3, 6 + bob, 20, 3);
+      block("#5d3628", 4, 9 + bob, 4, 8);
+      block("#ffc49f", 8, 9 + bob, 13, 8);
+      block("#1a1113", 16, 10 + bob, 2, 2);
+      block("#4b2f25", 14, 14 + bob, 9, 2);
+      block("#e53935", 6, 17 + bob, 17, 6);
+      block("#1976d2", 9, 20 + bob, 12, 8);
+      block("#ffe36e", 10, 21 + bob, 2, 2);
+      block("#ffe36e", 17, 21 + bob, 2, 2);
+      block("#ffc49f", 21, 18 + bob, 5, 4);
+      block("#6d4c41", 6, 27 + bob, 8, 3);
+      block("#6d4c41", 17, 27 + bob, 8, 3);
 
-      // Ray blaster and crosshair.
-      block("#c9d3ee", 26, 24 + bob, 14, 5);
-      block("#55f4ff", 35, 22 + bob, 12, 3);
-      block("#ffe36e", 45, 21 + bob, 5, 5);
-      ctx.strokeStyle = "rgba(85,244,255,.8)";
+      block("#d8e7ff", 24, 17 + bob, 10, 4);
+      block("#55f4ff", 31, 16 + bob, 8, 2);
+      block("#ffe36e", 37, 15 + bob, 4, 4);
+      block("#657399", 26, 21 + bob, 4, 3);
+
+      ctx.strokeStyle = "rgba(85,244,255,.72)";
       ctx.lineWidth = 1;
-      ctx.strokeRect(51, 18, 9, 9);
-      block("#55f4ff", 55, 16, 1, 13);
-      block("#55f4ff", 49, 22, 13, 1);
+      ctx.strokeRect(41, 12, 6, 6);
+      block("#55f4ff", 44, 10, 1, 10);
+      block("#55f4ff", 39, 15, 10, 1);
 
       if (time < shotUntil) {
-        block("#fff", 50, 20 + bob, 5, 5);
-        block("#ffe36e", 55, 18 + bob, 7, 9);
-        block("#ff75d8", 62, 20 + bob, 4, 5);
+        block("#fff", 39, 14 + bob, 3, 3);
+        block("#ffe36e", 42, 12 + bob, 5, 7);
       }
 
       window.requestAnimationFrame(drawRanger);
     }
 
     window.addEventListener("pixel-ranger-shoot", () => {
-      shotUntil = performance.now() + 130;
+      shotUntil = performance.now() + 140;
     });
 
     window.requestAnimationFrame(drawRanger);
