@@ -758,3 +758,59 @@ figure.highlight::before {
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* Keep related stories in the reading column instead of the sidebar column. */
+.page__related {
+  margin-top: 2rem !important;
+  padding: 1.5rem !important;
+  border: 1px solid rgba(154, 135, 255, 0.24);
+  border-radius: 22px;
+  background: rgba(13, 18, 39, 0.78);
+}
+
+.page__related-title {
+  margin: 0 0 1rem;
+  color: var(--text);
+}
+
+.page__related-title::before {
+  content: "🎮 ";
+}
+
+.page__related .grid__wrapper {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin: 0;
+}
+
+.page__related .grid__item {
+  float: none !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+
+.page__related .archive__item {
+  height: 100%;
+  padding: 1rem;
+}
+
+@media (min-width: 1024px) {
+  #main > .page__related {
+    grid-column: 2;
+    width: min(100%, 1080px) !important;
+  }
+}
+
+@media (max-width: 1279px) {
+  .page__related .grid__wrapper {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .page__related .grid__wrapper {
+    grid-template-columns: 1fr;
+  }
+}
