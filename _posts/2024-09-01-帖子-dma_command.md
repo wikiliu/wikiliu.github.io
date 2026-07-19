@@ -8,6 +8,7 @@ tags:
   - GPU
   - OPENGL
 ---
+
 usermode 填写command在ELite3K层，就是在gl warpper层下具体的实现，功能是由service层给的，但是full是这一层实现的，hardware command在chip common层。
 
 
