@@ -7,6 +7,7 @@ categories:
 tags:
   - GDB
 ---
+
 gdb调试user app时需要符号信息，安装的app或者so一般都是stripped且没有debug info，gdb找不到符号。
 
 ## [debuginfo](https://ubuntu.com/server/docs/about-debuginfod)
@@ -44,6 +45,7 @@ sudo apt install devscripts equivs
 mk-build-deps  # sudo apt install devscripts equivs
 sudo apt install ./mesa-build-deps_24.0.5-1ubuntu1_amd64.deb
 ```
+
 > 优点：精准安装，也比较快，内网可以apt source
 
 > 缺点：可能会出现没有符号包的情况
