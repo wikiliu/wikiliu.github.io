@@ -4,7 +4,7 @@ last_modified_at: 2023-07-18
 classes: wide
 categories:
     - 帖子
-tags:  
+tags:
     - OPENGL
     - GRAPHICS
 toc: true
@@ -14,9 +14,11 @@ toc_sticky: true
 在LearnOpenGL中，Stencil testing的部分，但是我在看的时候，发现有那三个函数不是很理解，所以就在这里记录一下。
 
 ## 1. Stencil buffer
+
 这一部分很简单，就是一个buffer，用来存储模板值，这个值可以在绘制的时候被修改，然后在绘制的时候，可以根据这个值来决定是否绘制。通常是1绘制，0不绘制。
 
 ## 2. glStencilFunc
+
 这个函数是用来设置模板测试的，也就是说，我们可以设置一个模板值，然后在绘制的时候，根据这个模板值来决定是否绘制。
 
 `glStencilFunc(GL_EQUAL, 1, 0xFF)`

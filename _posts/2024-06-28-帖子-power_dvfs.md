@@ -31,4 +31,3 @@ tags:
 
     AP/SCP（application processor/ system control processor）或者MMIO 发送request到PMU
     PMU通过pmu internal interface 到VSUS_PMU,VSUS发送ctrl到VMM clock frequency的PLL/EPLL，如果是AVS则到PMIC
-    

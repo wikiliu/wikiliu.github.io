@@ -1,6 +1,6 @@
 ---
 title: "dma-command"
-date: 2024-09-2T15:47:30-04:00
+date: 2024-09-02 15:47:30 -0400
 classes: wide
 categories:
   - 帖子
@@ -8,6 +8,7 @@ tags:
   - GPU
   - OPENGL
 ---
+
 usermode 填写command在ELite3K层，就是在gl warpper层下具体的实现，功能是由service层给的，但是full是这一层实现的，hardware command在chip common层。
 
 
