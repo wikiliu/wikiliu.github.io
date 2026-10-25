@@ -6,6 +6,8 @@ categories:
   - 帖子
 tags:
   - GPU
+toc: true
+toc_sticky: true
 ---
 
 这里将power和dvfs单独拿出来，内容会比hardware概览更详细。

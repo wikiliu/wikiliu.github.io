@@ -3,10 +3,10 @@ title: "Opengl中Stencil testing的理解"
 last_modified_at: 2023-07-18
 classes: wide
 categories:
-    - 帖子
+  - 帖子
 tags:
-    - OPENGL
-    - GRAPHICS
+  - OPENGL
+  - GRAPHICS
 toc: true
 toc_sticky: true
 ---
@@ -33,5 +33,4 @@ toc_sticky: true
 
 这个函数是用来设置模板缓冲区是否可以写入的，如果设置为false(0x00)，那么就不会写入模板缓冲区。其实就是与glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)返回的结果相与，决定是否更新模板缓冲区。
 
-
->重点是模板缓冲区的值默认是1，如果没有设置glStencilFunc，那么所有的片段都会通过模板测试，然后根据glStencilOp的设置更新模板缓冲区的值。如果设置了glStencilFunc，那么根据glStencilFunc的设置，决定是否通过模板测试，然后根据glStencilOp的设置更新模板缓冲区的值。可以点击链接进入learnopengl的教程，里面有详细的解释。[Stencil testing](https://learnopengl.com/Advanced-OpenGL/Stencil-testing)
+> 重点是模板缓冲区的值默认是1，如果没有设置glStencilFunc，那么所有的片段都会通过模板测试，然后根据glStencilOp的设置更新模板缓冲区的值。如果设置了glStencilFunc，那么根据glStencilFunc的设置，决定是否通过模板测试，然后根据glStencilOp的设置更新模板缓冲区的值。可以点击链接进入learnopengl的教程，里面有详细的解释。[Stencil testing](https://learnopengl.com/Advanced-OpenGL/Stencil-testing)

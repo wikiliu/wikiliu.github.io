@@ -3,26 +3,24 @@ title: "帖子: Ubuntu搭建Linux 2.6.24内核调试环境"
 last_modified_at: 2023-05-14
 classes: wide
 categories:
-    - 收藏
+  - 收藏
 tags:
-    - 收藏
-    - 代码
-    - LINUX
+  - 收藏
+  - 代码
+  - LINUX
 toc: true
 toc_sticky: true
 ---
 
-
 最近在读《深入Linux内核架构》，搭建了一下Linux 2.6.24的内核调试环境。由于该内核较老，目前找不到任何还在维护的发行版，所以采用qemu运行32位的内核。
-
 
 ## 基础环境
 
->*虚拟机镜像：ubuntu-14.04.6-desktop-amd64.iso
+> *虚拟机镜像：ubuntu-14.04.6-desktop-amd64.iso
 
->*gcc版本：4.4 “sudo apt install gcc-4.4”
+> *gcc版本：4.4 “sudo apt install gcc-4.4”
 
->*都在root环境下执行，能省去不少麻烦 “su”
+> *都在root环境下执行，能省去不少麻烦 “su”
 
 ## 安装插件
 
@@ -42,35 +40,35 @@ cd linux-2.6.24
 make ARCH=i386 defconfig
 make ARCH=i386 menuconfig
 # 选择以下编译选项，使用空格键选择。然后退出
-<span class="has-inline-color has-light-green-cyan-color">Kernel hacking  --->
+Kernel hacking  --->
     [*] Compile the kernel with debug info
-    [*] KGDB: kernel debugging with remote gdb  ---> </span>
+    [*] KGDB: kernel debugging with remote gdb  --->
 make ARCH=i386 -j4
 #可能会出现寄存器错误 用vim打开报错文件在命令模式下输入
-<span class="has-inline-color has-pale-cyan-blue-color">%s/"=r"/"=q"g</span>
+%s/"=r"/"=q"g
 ```
 
 ## 制作文件系统`（使用busybox制作32位根文件系统）`
 
 ```
-# 1. <strong>就在linux-2.6.24目录下下载busybox</strong>
+# 1. **就在linux-2.6.24目录下下载busybox**
 wget --no-check-certificate https://busybox.net/downloads/busybox-1.21.1.tar.bz2
 tar jxvf busybox-1.21.1.tar.bz2
 cd busybox-1.21.1
 
-<strong><span class="has-inline-color has-vivid-red-color"># 2. 修改Makefile，在292行最后加上-m32</span></strong>  非常重要 64位会报错
+**# 2. 修改Makefile，在292行最后加上-m32**  非常重要 64位会报错
 
 vim Makefile
-<span class="has-inline-color has-pale-cyan-blue-color">CC = $(CROSS_COMPILE)gcc -m32</span>
+CC = $(CROSS_COMPILE)gcc -m32
 
 # 3. 设置busybox编译选项。注意使用静态链接，关闭Job Control
 make defconfig
 make menuconfig
-<span class="has-inline-color has-light-green-cyan-color">Busybox Settings  --->
+Busybox Settings  --->
       Build Options  --->
             [*] Build BusyBox as a static binary (no shared libs)
 Shells  --->
-      [ ]   Job control  </span>
+      [ ]   Job control
 
 # 4. 制作initrd.img   先回到上一级目录
 
@@ -128,8 +126,8 @@ umount ./rootfs
 ```
 qemu-system-x86_64 -kernel ./arch/x86/boot/bzImage -initrd ./initrd.img -append "root=/dev/ram"
 当然，也可以使用
-<kbd>-nographi</kbd>c参数，在tty0启动内核
+`-nographi`c参数，在tty0启动内核
 qemu-system-x86_64 -kernel ./arch/x86/boot/bzImage -initrd ./initrd.img -append "root=/dev/ram console=ttyS0" -nographic
 ```
 
->这篇文章参考<https://juejin.cn/post/7160349299401277476>，但是在gcc版本上做了修改，避免了对改源码。另外，这个文件目录是我唯一成功的一次，源码文件夹下保存着rootrf
+> 这篇文章参考<https://juejin.cn/post/7160349299401277476>，但是在gcc版本上做了修改，避免了对改源码。另外，这个文件目录是我唯一成功的一次，源码文件夹下保存着rootrf

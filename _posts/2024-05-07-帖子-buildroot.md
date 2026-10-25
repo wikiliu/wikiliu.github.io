@@ -7,6 +7,8 @@ categories:
 tags:
   - LINUX
   - EMBEDDED
+toc: true
+toc_sticky: true
 ---
 
 buildroot可以编一个精简操作系统或者交叉编译binary
@@ -39,12 +41,11 @@ output file tree：
 3. target 要打在生成精简操作系统的文件系统
 4. image 最终生成 包括.dtb--boot zImage--kernel rootfs.tar rootfs.ubi (格式不一样而已)
 
-
 ## 库的功能
 
-* libbsd.so 提供了对一些常见的网络、文件系统和系统功能的访问，这些功能可能在标准 C 库中不易使用或不可用
-* libXdmcp.so X Window 系统中用于远程登录和显示管理的协议
-* libXau.so 控制用户如何访问 X 服务器，以确保安全性和权限管理
-* libxshmfence.so 用于同步共享内存访问的机制
-* libxcb.so 用于与 X 服务器进行底层通信，以实现图形显示和用户交互
-* librt.so 表明这个库主要用于支持实时操作系统的特性
+- libbsd.so 提供了对一些常见的网络、文件系统和系统功能的访问，这些功能可能在标准 C 库中不易使用或不可用
+- libXdmcp.so X Window 系统中用于远程登录和显示管理的协议
+- libXau.so 控制用户如何访问 X 服务器，以确保安全性和权限管理
+- libxshmfence.so 用于同步共享内存访问的机制
+- libxcb.so 用于与 X 服务器进行底层通信，以实现图形显示和用户交互
+- librt.so 表明这个库主要用于支持实时操作系统的特性

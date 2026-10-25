@@ -6,6 +6,8 @@ categories:
   - 帖子
 tags:
   - GDB
+toc: true
+toc_sticky: true
 ---
 
 gdb调试user app时需要符号信息，安装的app或者so一般都是stripped且没有debug info，gdb找不到符号。

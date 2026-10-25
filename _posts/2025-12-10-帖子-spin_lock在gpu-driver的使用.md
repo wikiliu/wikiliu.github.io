@@ -1,9 +1,20 @@
+---
+title: "spin_lock在gpu-driver的使用"
+date: 2025-12-10T15:58:06+09:00
+classes: wide
+categories:
+  - 帖子
+tags:
+  - 帖子
+toc: true
+toc_sticky: true
+---
+
 所有的spin_lock都必须保证别被sleep任务抢占!!!
 
 ** void spin_lock(spinlock_t *lock);
 
 > 普通锁，必须保证没有任何中断和可睡眠事件打断，否则可能死锁
-
 
 ** void spin_lock_irqsave(spinlock_t *lock, unsigned long flags);
 

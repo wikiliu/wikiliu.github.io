@@ -3,15 +3,14 @@ title: "BUG: pacman清理孤包异常"
 last_modified_at: 2023-05-15
 classes: wide
 categories:
-    - BUG
+  - BUG
 tags:
-    - BUG
-    - ARCH
-    - PACMAN
+  - BUG
+  - ARCH
+  - PACMAN
 toc: true
 toc_sticky: true
 ---
-
 
 **清理pacman孤包执行`sudo pacman -Rns $(pacman -Qtdq)` 后进不了桌面**
 
