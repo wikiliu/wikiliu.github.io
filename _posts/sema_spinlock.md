@@ -61,3 +61,10 @@ else
 - [arise_submit.c](arise_submit.c)：`arise_handle_dma_task()`，渲染提交传入 `intr = 1`。
 - [arise_workerthread.c](arise_workerthread.c)：`arise_task_queue_alloc()`、`arise_task_queue_add()`、`arise_try_submit_task_queue_first_task()`。
 - [os_interface.c](os_interface.c)：驱动封装与 Linux `sema_init()`、`down_interruptible()`、`up()`、`spin_lock()` 的对应关系。
+
+
+
+1. KMS Handle只有get image采用，aws背后只有一个winsys，sws的bo也会创建在aws上，所以必须export。由于是用一个进程只会destory一次，所以get fd会增加一次引用计数。只有两次open card才会出现，一般都是dup
+2. age reversed age表示page变动，vma age也需要变，所以vma age通常小于 reversed，做完vm update才相等
+3. 线程调度每个rb index一个sheduler，每个sheduler管三个优先级task pool，context往对应的task pool上copy task，然后调度到hw ring上
+4. internal fence在一个ring的多个dma之间，这是隐式的；rb fence没怎么用，不同ring之间；externel是显示fence，但是ring里面每次submit都会自己添加external fence.
