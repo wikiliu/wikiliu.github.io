@@ -912,3 +912,10 @@ KMD 在 `arise_gfx_ring_post_dma_r2()` 中填入 `context->cache_flush_gpu_va` �
 ```
 
 两种完成命令的值相同，不代表前置任务、paging、页表任务、render 全部共用一个 ID；同一业务提交可能触发多个辅助任务，每个实际提交的任务从其 sched 分配自己的编号。
+
+
+
+1. OGL 一般用隐式fence，因为umd本身会保证同一个context上的顺序提交 + allocation list，所以在parse task之前判断是不是同一个fence context（就是open device创建的context，之前get过现在put回去），不同才等；会把所有需要等的dma fence 包括隐式（bo读写fence）和显式（sync obj fence）带下来，在送schedule下kick off之前，才等arise_dma_fence_is_signaled
+2. 也可以显式fence，submit添加signal_syncobj_list（没用），gf_drm_wait_fence是手动调的也是在scheduler里等
+3. KMD只保证提交到GPU后的队列顺序，UMD应该保证SUBMIT的顺序（ioctl sbmit会batch到 task queue才return，应该通过WAIT_FOR_SUBMIT，一定会等syncobj上有fence，drmSyncobjReset-> Attach fence to Sync obj（两个地方更新submit和signal from gpu，后一个就是bind到最后一个fence）-> wait from cpu），例如X11用fence fd，Vulkan用syncobj
+4. 一个常见case，同一个线程 draw和read，关键看UNSYNCHRONIZED等还是不等，否则就等wait_bo_idle，等的是bo上挂的syncobj （wait from cpu）
