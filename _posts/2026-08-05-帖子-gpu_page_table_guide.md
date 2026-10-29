@@ -645,3 +645,8 @@ grep -rn "arise_mmu_pte\|pte_segment\|pte_pa"
 # 查找 context switch
 grep -rn "set_root_page_table\|ttbr_reg_num_per_process\|nr_ttbr_in_shared"
 ```
+
+
+1. 分页表一个用arise_pages_mgr_alloc_pages_memory，arise_vram_mgr_allocate_fb_page_memory，arise_pages_mgr_alloc_pages_memory得到的是sg table，地址要dma_map_sg，arise_vram_mgr_allocate_fb_page_memory得到的gpu pa，+bus_addr就是cpu pa.
+2. 页表内存也是bo分配，但是填的是reserved bo，reserved bo map gpu 虚拟地址后，cpu填gpu pa和map gpu va. DCE用这个gpu va改页表项. 分支在 update_vm_task != NULL，一个用cpu填一个gpu填，本质是visiable只能cpu填，不然死循环.
+3. 所有vma共享只有128M只包含fence、BL等；128M~4G放页表bo；，reserved vma有4G，reserved vma初始化阶段1.2级表都填好了，且reserved vma页表由cpu填. APP在reserved vma分了页表bo后，页表bo的页表entry是cpu填的，要拿到gpu va给dce去改页表项.    总结： 页表所在bo的vma 1.2.3级都是cpu填，APP分配的bo只需往页表填东西，DCE可以填了.
