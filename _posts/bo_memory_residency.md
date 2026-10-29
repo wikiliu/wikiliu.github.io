@@ -732,5 +732,6 @@ GPU fence 进展
 
 
 
-1. paging out = unresident. 每个segment维护几个优先级lru list（表示可以paging out的bo list，优先级越低越容易paging out）和pinned_list，task finish会把bo加到lru lisr，真正决定paging out出去才unresident bo. 先从系统内存pool（包括cachable 和 uncachable）里分，pool不够了再alloc page，这个pool是bo release放进去的.
+1. paging out = unresident. resident list包括pin和unpin，每个segment维护几个优先级lru list（表示可以paging out的bo list，优先级越低越容易paging out）和pinned_list，task finish会把bo加到lru lisr，真正决定paging out出去才unresident bo. 先从系统内存pool（包括cachable 和 uncachable）里分，pool不够了再alloc page，这个pool是bo release放进去的.
 2. swap out. alloc page系统不会swap，需要自己做. 有一套机制move 到 shmem_file_setup. 
+3. swap和paging out都只弄一个bo，外面的alloc physical mem 循环100次
